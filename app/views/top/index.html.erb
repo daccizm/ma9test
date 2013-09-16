@@ -1,4 +1,11 @@
-<h1>Top#index</h1>
-<p>Find me in app/views/top/index.html.erb</p>
+<h1>じゃらんAPIテスト用</h1>
+
+<%= radio_button_tag 'location', 'osaka', {:checked => true} %>大阪
+<%= radio_button_tag 'location', 'matsue' %>松江
+
+<%= hidden_field_tag 'hdn[lat]' %>
+<%= hidden_field_tag 'hdn[lng]' %>
 
 <%= text_area_tag 'hoge', @jalan %>
+
+<div id="map-canvas"></div>

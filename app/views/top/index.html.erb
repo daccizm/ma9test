@@ -1,10 +1,14 @@
 <h1>じゃらんAPIテスト用</h1>
 
-<%= radio_button_tag 'location', 'osaka', {:checked => true} %>大阪
-<%= radio_button_tag 'location', 'matsue' %>松江
+<%#= radio_button_tag 'location', 'osaka', {:checked => true} %>
+<!-- 大阪 -->
+<%#= radio_button_tag 'location', 'matsue' %>
+<!-- 松江 -->
 
-<%= hidden_field_tag 'hdn[lat]' %>
-<%= hidden_field_tag 'hdn[lng]' %>
+<%= form_tag("top/availability", :remote=>true, :id=>"frmGpsLatLng") do %>
+	<%= hidden_field_tag 'hdn[lat]' %>
+	<%= hidden_field_tag 'hdn[lng]' %>
+<% end %>
 
 <%= text_area_tag 'hoge', @jalan %>
 

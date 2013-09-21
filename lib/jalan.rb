@@ -16,8 +16,8 @@ module Jalan
 
 			res = conn.get '/APIAdvance/StockSearch/V1/', {
 				:key => 'cap14120256f0f',
-				:x => sprintf("%09d", xy["lat"]),
-				:y => sprintf("%09d", xy["lng"]),
+				:x => sprintf( "%09d", xy["lat"] ),
+				:y => sprintf( "%09d", xy["lng"] ),
 				:range => opt[:range],
 				:stay_date => opt[:stay_date],
 				:stay_count => opt[:stay_count],
@@ -46,10 +46,10 @@ module Jalan
 		def DatumConvert::wgs842tokyo(lat,lng)
 			hash = Hash.new
 			# 経度変換(世界測地系->日本測地系)
-			hash["lat"] = lat + 0.000046047*lng + 0.000083049*lat - 0.010041
+			hash["lat"] = ( lat * 1.000083049 + lng * 0.000046047 - 0.010041046 ) * 3600 * 1000
 
 			# 緯度変換(世界測地系->日本測地系)
-			hash["lng"] = lng + 0.00010696*lng - 0.000017467*lat - 0.0046020
+			hash["lng"] = ( lng * 1.000106961 - lat * 0.000017467 - 0.004602017 ) * 3600 * 1000
 
 			return hash
 		end

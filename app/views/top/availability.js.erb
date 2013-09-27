@@ -10,7 +10,8 @@ var markerArray = new Array();
 	markerArray.push({
 		position: new google.maps.LatLng("<%= val['X'] %>","<%= val['Y'] %>"),
 		title: "<%= val['HotelName'] %>",
-		content: content
+		content: content,
+		rate: "<%= val['Rate'] %>"
 	});
 <% } %>
 

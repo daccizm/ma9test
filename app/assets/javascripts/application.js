@@ -28,11 +28,21 @@ var setMarkerData = function(makerArray) {
 		var marker = new google.maps.Marker({
 			position: makerArray[i].position,
 			map: gmap,
-			title: makerArray[i].title
+			title: makerArray[i].title,
+			icon: new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld="+ (i + 1) + "|ff7e73|000000")
 		});
 
 		// マーカーのclickリスナー登録
 		setMarkerClickListener(marker, makerArray[i], true);
+
+		// マーカーの一覧出力・リンクのクリック時のイベント設定
+		var link_name = "料金：";
+		link_name += markerArray[i].rate;
+		link_name += " ";
+		link_name += markerArray[i].title;
+		var link = $('<li>').append($('<a href="javascript:void(0)"/>').text(link_name));
+		$('#marker_list >ol').append(link);
+		setLinkClickEvent(link, marker);
 	}
 };
 
@@ -51,6 +61,15 @@ var setMarkerClickListener = function(marker, markerData) {
 			openInfoWindow = null;
 		})
 		openInfoWindow.open(marker.getMap(), marker);
+	});
+};
+
+/*
+ * リンクのクリックイベントの登録
+ */
+var setLinkClickEvent = function(link, marker){
+	link.bind('click', function(){
+		google.maps.event.trigger(marker, 'click');
 	});
 };
 

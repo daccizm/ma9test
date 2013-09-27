@@ -1,10 +1,16 @@
 var markerArray = new Array();
 
 <% @jalan.each_value { |val| %>
+
+	var content = "<a href='<%= val['HotelDetailURL'] %>' target='_blank'><%= val['HotelName'] %></a><hr/>";
+	content += "最安プラン：<%= val['RoomName'] %><br/>";
+	content += "料金：<%= val['Rate'] %><br/>";
+	content += "空き室数：<%= val['Stock'] %><br/>";
+
 	markerArray.push({
 		position: new google.maps.LatLng("<%= val['X'] %>","<%= val['Y'] %>"),
 		title: "<%= val['HotelName'] %>",
-		content: "<%= val['HotelName'] %><hr/>最安値：<%= val['Rate'] %>",
+		content: content
 	});
 <% } %>
 

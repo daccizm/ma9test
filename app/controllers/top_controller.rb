@@ -1,3 +1,5 @@
+# coding: utf-8
+
 class TopController < ApplicationController
   def index
   end
@@ -12,7 +14,7 @@ class TopController < ApplicationController
     opt[:adult_num] = "1"
     opt[:count] = "100"
 
-    @jalan = Jalan::API.make(opt)
+    response = Jalan::API.make(opt)
 
     hotels = Hash.new
 
@@ -24,6 +26,9 @@ class TopController < ApplicationController
 
         hotel = Hash.new
         hotel["HotelName"] = node.css('HotelName').text
+        hotel["HotelDetailURL"] = node.css('HotelDetailURL').text
+        hotel["RoomName"] = node.css('RoomName').text
+        hotel["Stock"] = node.css('Stock').text.empty? ? "10以上" : node.css('Stock').text
         hotel["Rate"] = node.css('Stay Date Rate').text
         hotel["X"] = latLng["lng"]
         hotel["Y"] = latLng["lat"]
@@ -34,7 +39,7 @@ class TopController < ApplicationController
         hotel["Rate"] = node.css('Stay Date Rate').text
       end
     }
-    
+
     @jalan = hotels
 
     respond_to do |format|

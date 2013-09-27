@@ -1,5 +1,7 @@
 Ma9test::Application.routes.draw do
 
+  root :to => "top#index"
+
   resources :top do
     collection do
       get :availability

@@ -79,20 +79,20 @@ $(document).ready(function(){
 
 		navigator.geolocation.watchPosition(
 			function(position){
+
+				// GoogleMapを読み込んでいたら終了
+				if (gmap) return;
+
 				$('#hdn_lat').val(position.coords.latitude);
 				$('#hdn_lng').val(position.coords.longitude);
 				$('#frmGpsLatLng').trigger('submit');
 
-			  var mapOptions = {
-			    zoom: 16,
-			    center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-			    mapTypeId: google.maps.MapTypeId.ROADMAP
-			  };
-
-			  if (!gmap) {
-				  gmap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
-			  }
-
+			    var mapOptions = {
+			      zoom: 16,
+			      center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+			      mapTypeId: google.maps.MapTypeId.ROADMAP
+			    };
+				gmap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
 			}
 		);
 

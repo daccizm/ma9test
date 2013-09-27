@@ -1,7 +1,9 @@
 Ma9test::Application.routes.draw do
 
   resources :top do
-    get "availability", :on => :collection
+    collection do
+      get :availability
+    end
   end
 
 

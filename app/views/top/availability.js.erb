@@ -1,0 +1,13 @@
+var markerArray = new Array();
+
+<% @jalan.each_value { |val| %>
+	markerArray.push({
+		position: new google.maps.LatLng("<%= val['X'] %>","<%= val['Y'] %>"),
+		title: "<%= val['HotelName'] %>",
+		content: "<%= val['HotelName'] %><hr/>最安値：<%= val['Rate'] %>",
+	});
+<% } %>
+
+setMarkerData(markerArray);
+
+// $('#hoge').val("<%=j @jalan.to_s %>");

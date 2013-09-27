@@ -14,56 +14,67 @@
 //= require jquery_ujs
 //= require_tree .
 
+var gmap;
+
+var openInfoWindow;
+
+/*
+ * マーカーデータのセット
+ */
+var setMarkerData = function(makerArray) {
+	for (var i = 0; i < makerArray.length; i++) {
+
+		// マーカー作成
+		var marker = new google.maps.Marker({
+			position: makerArray[i].position,
+			map: gmap,
+			title: makerArray[i].title
+		});
+
+		// マーカーのclickリスナー登録
+		setMarkerClickListener(marker, makerArray[i], true);
+	}
+};
+
+/*
+ * マーカーのクリックイベントリスナーの登録
+ */
+var setMarkerClickListener = function(marker, markerData) {
+	google.maps.event.addListener(marker, 'click', function(event) {
+		if (openInfoWindow) {
+			openInfoWindow.close();
+		}
+		openInfoWindow = new google.maps.InfoWindow({
+			content:markerData.content
+		});
+		google.maps.event.addListener(openInfoWindow,'closeclick',function(){
+			openInfoWindow = null;
+		})
+		openInfoWindow.open(marker.getMap(), marker);
+	});
+};
+
 $(document).ready(function(){
-	// $('#map-canvas').html();
 
-	// $('#location_osaka').click(function(){
-	// 	&('#hdn_lat').val('34.702936');
-	// 	&('#hdn_lng').val('135.497807');
-	// });
-
-	// $('#location_matsue').click(function(){
-	// 	&('#hdn_lat').val('35.465532');
-	// 	&('#hdn_lng').val('133.060246');
-	// });
-
-	// alert(lat);
-
-	var map;
 	function initialize() {
-
-		// func();
-		// var lat = parseInt( $('#hdn_lat').val() );
-		// var lng = parseInt( $('#hdn_lng').val() );
 
 		navigator.geolocation.watchPosition(
 			function(position){
 				$('#hdn_lat').val(position.coords.latitude);
 				$('#hdn_lng').val(position.coords.longitude);
+				$('#frmGpsLatLng').trigger('submit');
 
 			  var mapOptions = {
 			    zoom: 16,
-			    // center: new google.maps.LatLng(35.655, 139.748),
-			    // center: new google.maps.LatLng(35.468059, 133.048375),
-			    // center: new google.maps.LatLng($('#hdn_lat').val(), $('#hdn_lng').val()),
-			    // center: new google.maps.LatLng(lat, lng),
 			    center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
 			    mapTypeId: google.maps.MapTypeId.ROADMAP
 			  };
-			  map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+
+			  gmap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
 
 			}
 		);
 
-	  // var mapOptions = {
-	  //   zoom: 16,
-	  //   // center: new google.maps.LatLng(35.655, 139.748),
-	  //   center: new google.maps.LatLng(35.468059, 133.048375),
-	  //   // center: new google.maps.LatLng($('#hdn_lat').val(), $('#hdn_lng').val()),
-	  //   // center: new google.maps.LatLng(lat, lng),
-	  //   mapTypeId: google.maps.MapTypeId.ROADMAP
-	  // };
-	  // map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
 	}
 
 	google.maps.event.addDomListener(window, 'load', initialize);

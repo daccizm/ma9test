@@ -24,9 +24,7 @@ module Jalan
 				:adult_num => opt[:adult_num],
 				:count => opt[:count]
 			}
-
 			Nokogiri::XML(res.body)
-
 		end
 
 	end
@@ -35,10 +33,10 @@ module Jalan
 		def DatumConvert::tokyo2wgs84(lat,lng)
 			hash = Hash.new
 			# 経度変換(日本測地系->世界測地系)
-			hash["lat"] = lat - 0.000046038*lng - 0.000083043*lat + 0.010040
+			hash["lat"] = lat - lng * 0.000046038 - lat * 0.000083043 + 0.010040
 
 			# 緯度変換(日本測地系->世界測地系)
-			hash["lng"] = lng - 0.00010695*lng + 0.000017464*lat + 0.0046017
+			hash["lng"] = lng - lng * 0.00010695 + lat * 0.000017464 + 0.0046017
 
 			return hash
 		end

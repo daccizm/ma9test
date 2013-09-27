@@ -70,7 +70,9 @@ $(document).ready(function(){
 			    mapTypeId: google.maps.MapTypeId.ROADMAP
 			  };
 
-			  gmap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+			  if (!gmap) {
+				  gmap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+			  }
 
 			}
 		);

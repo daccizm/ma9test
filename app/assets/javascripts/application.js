@@ -116,7 +116,7 @@ var setMarkerPlace = function(results){
 	}
 };
 
-var wathId;
+var watchId;
 var start_time;
 var current_time;
 
@@ -126,7 +126,7 @@ $(document).ready(function(){
 
 		start_time = new Date();
 
-		wathId = navigator.geolocation.watchPosition(
+		watchId = navigator.geolocation.watchPosition(
 
 			function(position){
 
@@ -134,34 +134,34 @@ $(document).ready(function(){
 				var process_time = current_time - start_time;
 
 				// GoogleMapを読み込んでいたら終了
-				if (gmap) return;
+				// if (gmap) return;
+
+				// 現在地から空室を検索（非同期）
+				$('#hdn_lat').val(position.coords.latitude);
+				$('#hdn_lng').val(position.coords.longitude);
+				$('#frmGpsLatLng').trigger('submit');
+
+				// 現在地の緯度経度を保持しておく
+				centerLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+			    var mapOptions = {
+			      zoom: 16,
+			      center: centerLatLng,
+			      mapTypeId: google.maps.MapTypeId.ROADMAP
+			    };
+
+				// マップを生成
+				gmap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+
+				// 現在地のマーカー作成
+				var marker = new google.maps.Marker({
+					position: centerLatLng,
+					map: gmap,
+					title: "現在地",
+					icon: 'https://chart.googleapis.com/chart?chst=d_bubble_icon_text_small&chld=ski|bb|here!|FFFFFF|000000'
+				});
 
 				if(position.coords.accuracy < 300 || process_time > 15000){
-
-					// 現在地から空室を検索（非同期）
-					$('#hdn_lat').val(position.coords.latitude);
-					$('#hdn_lng').val(position.coords.longitude);
-					$('#frmGpsLatLng').trigger('submit');
-
-					// 現在地の緯度経度を保持しておく
-					centerLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-
-				    var mapOptions = {
-				      zoom: 16,
-				      center: centerLatLng,
-				      mapTypeId: google.maps.MapTypeId.ROADMAP
-				    };
-
-					// マップを生成
-					gmap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
-
-					// 現在地のマーカー作成
-					var marker = new google.maps.Marker({
-						position: centerLatLng,
-						map: gmap,
-						title: "現在地",
-						icon: 'https://chart.googleapis.com/chart?chst=d_bubble_icon_text_small&chld=ski|bb|here!|FFFFFF|000000'
-					});
 					navigator.geolocation.clearWatch(watchId);
 				}
 			},
@@ -178,8 +178,5 @@ $(document).ready(function(){
 	}
 
 	google.maps.event.addDomListener(window, 'load', initialize);
-
-	// コンビニ検索
-	placeSearch();
 
 })

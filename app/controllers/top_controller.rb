@@ -14,8 +14,6 @@ class TopController < ApplicationController
     opt[:adult_num] = "1"
     opt[:count] = "100"
 
-    response = Jalan::API.make(opt)
-
     hotels = Hash.new
 
     Jalan::API.make(opt).css("Results Plan").each { |node| 

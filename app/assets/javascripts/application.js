@@ -16,7 +16,6 @@
 
 var gmap;
 var centerLatLng;
-
 var openInfoWindow;
 
 /*
@@ -44,9 +43,6 @@ var setMarkerData = function(makerArray) {
 		var link = $('<li>').append($('<a href="javascript:void(0)"/>').text(link_name));
 		$('#marker_list >ol').append(link);
 		setLinkClickEvent(link, marker);
-
-		// コンビニ検索
-		placeSearch();
 	}
 };
 
@@ -89,18 +85,24 @@ var placeSearch = function(keyword){
 		rankBy: google.maps.places.RankBy.DISTANCE
 	};
 	service = new google.maps.places.PlacesService(gmap);
-	service.search(request, placeSearch_callback);
+	service.search(request, placeSearchCallback);
 };
 
-var placeSearch_callback = function(results, status){
+/*
+ * コンビニ検索のコールバック
+ */
+var placeSearchCallback = function(results, status){
 	if (status == google.maps.places.PlacesServiceStatus.OK) {
 		if (results.length > 0) {
-			createList(results);
+			setMarkerPlace(results);
 		}
 	}
 };
 
-var createList = function(results){
+/*
+ * コンビニのマーカーをセット
+ */
+var setMarkerPlace = function(results){
 	for (var i = 0; i < results.length; i++) {
 		var place = results[i];
 		var latlng = new google.maps.LatLng(place.geometry.location.lat(),place.geometry.location.lng());
@@ -125,7 +127,7 @@ $(document).ready(function(){
 		start_time = new Date();
 
 		wathId = navigator.geolocation.watchPosition(
-		// navigator.geolocation.watchPosition(
+
 			function(position){
 
 				current_time = new Date();
@@ -135,19 +137,25 @@ $(document).ready(function(){
 				if (gmap) return;
 
 				if(position.coords.accuracy < 300 || process_time > 15000){
+
+					// 現在地から空室を検索（非同期）
 					$('#hdn_lat').val(position.coords.latitude);
 					$('#hdn_lng').val(position.coords.longitude);
 					$('#frmGpsLatLng').trigger('submit');
 
+					// 現在地の緯度経度を保持しておく
 					centerLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
 				    var mapOptions = {
 				      zoom: 16,
-				      center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+				      center: centerLatLng,
 				      mapTypeId: google.maps.MapTypeId.ROADMAP
 				    };
+
+					// マップを生成
 					gmap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
 
-					// マーカー作成
+					// 現在地のマーカー作成
 					var marker = new google.maps.Marker({
 						position: centerLatLng,
 						map: gmap,
@@ -157,16 +165,21 @@ $(document).ready(function(){
 					navigator.geolocation.clearWatch(watchId);
 				}
 			},
+
 			function(error){
 				var message = "地図情報が取得できませんでしorz<br/>";
 				message += error.code + ":" + error.message;
 				$('#map-canvas').html(message);
 			},
+
 			{enableHighAccuracy:true,timeout:1000,maximumAge:0}
 		);
 
 	}
 
 	google.maps.event.addDomListener(window, 'load', initialize);
+
+	// コンビニ検索
+	placeSearch();
 
 })

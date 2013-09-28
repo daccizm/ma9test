@@ -15,6 +15,7 @@
 //= require_tree .
 
 var gmap;
+var centerLatLng;
 
 var openInfoWindow;
 
@@ -43,6 +44,9 @@ var setMarkerData = function(makerArray) {
 		var link = $('<li>').append($('<a href="javascript:void(0)"/>').text(link_name));
 		$('#marker_list >ol').append(link);
 		setLinkClickEvent(link, marker);
+
+		// コンビニ検索
+		placeSearch();
 	}
 };
 
@@ -73,27 +77,92 @@ var setLinkClickEvent = function(link, marker){
 	});
 };
 
+/*
+ * コンビニ検索
+ */
+var placeSearch = function(keyword){
+	var request = {
+		//keyword: 'ローソン',
+		location: centerLatLng,
+		//radius: '250',
+		types: ['convenience_store'],
+		rankBy: google.maps.places.RankBy.DISTANCE
+	};
+	service = new google.maps.places.PlacesService(gmap);
+	service.search(request, placeSearch_callback);
+};
+
+var placeSearch_callback = function(results, status){
+	if (status == google.maps.places.PlacesServiceStatus.OK) {
+		if (results.length > 0) {
+			createList(results);
+		}
+	}
+};
+
+var createList = function(results){
+	for (var i = 0; i < results.length; i++) {
+		var place = results[i];
+		var latlng = new google.maps.LatLng(place.geometry.location.lat(),place.geometry.location.lng());
+
+		// マーカー作成
+		var marker = new google.maps.Marker({
+			position: latlng,
+			map: gmap,
+			title: place.name
+		});
+	}
+};
+
+var wathId;
+var start_time;
+var current_time;
+
 $(document).ready(function(){
 
 	function initialize() {
 
-		navigator.geolocation.watchPosition(
+		start_time = new Date();
+
+		wathId = navigator.geolocation.watchPosition(
+		// navigator.geolocation.watchPosition(
 			function(position){
 
+				current_time = new Date();
+				var process_time = current_time - start_time;
+
 				// GoogleMapを読み込んでいたら終了
-				if (gmap) return;
+				// if (gmap) return;
 
-				$('#hdn_lat').val(position.coords.latitude);
-				$('#hdn_lng').val(position.coords.longitude);
-				$('#frmGpsLatLng').trigger('submit');
+				if(position.coords.accuracy < 300 || process_time > 15000){
+					$('#hdn_lat').val(position.coords.latitude);
+					$('#hdn_lng').val(position.coords.longitude);
+					$('#frmGpsLatLng').trigger('submit');
 
-			    var mapOptions = {
-			      zoom: 16,
-			      center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-			      mapTypeId: google.maps.MapTypeId.ROADMAP
-			    };
-				gmap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
-			}
+					centerLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+				    var mapOptions = {
+				      zoom: 16,
+				      center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+				      mapTypeId: google.maps.MapTypeId.ROADMAP
+				    };
+					gmap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+
+					// マーカー作成
+					var marker = new google.maps.Marker({
+						position: centerLatLng,
+						map: gmap,
+						title: "現在地",
+						icon: 'https://chart.googleapis.com/chart?chst=d_bubble_icon_text_small&chld=ski|bb|here!|FFFFFF|000000'
+					});
+					navigator.geolocation.clearWatch(watchId);
+				}
+			},
+			function(error){
+				var message = "地図情報が取得できませんでしorz<br/>";
+				message += error.code + ":" + error.message;
+				$('#map-canvas').html(message);
+			},
+			{enableHighAccuracy:true,timeout:1000,maximumAge:0}
 		);
 
 	}

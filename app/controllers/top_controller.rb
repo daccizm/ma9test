@@ -40,7 +40,7 @@ class TopController < ApplicationController
       end
     }
 
-    @jalan = hotels
+    @jalan = hotels.sort_by{|key, val| val["Rate"].to_i }
 
     respond_to do |format|
       format.js   { render action: "availability.js.erb" }

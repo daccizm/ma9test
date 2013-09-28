@@ -1,6 +1,6 @@
 var markerArray = new Array();
 
-<% @jalan.each_value { |val| %>
+<% @jalan.each { |v| val = v[1] %>
 
 	var content = "<a href='<%= val['HotelDetailURL'] %>' target='_blank'><%= val['HotelName'] %></a><hr/>";
 	content += "最安プラン：<%= val['RoomName'] %><br/>";

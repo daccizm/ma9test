@@ -132,7 +132,7 @@ $(document).ready(function(){
 				var process_time = current_time - start_time;
 
 				// GoogleMapを読み込んでいたら終了
-				// if (gmap) return;
+				if (gmap) return;
 
 				if(position.coords.accuracy < 300 || process_time > 15000){
 					$('#hdn_lat').val(position.coords.latitude);
